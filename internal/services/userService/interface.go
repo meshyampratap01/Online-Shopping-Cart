@@ -7,6 +7,6 @@ type UserServiceManager interface {
 	Login(email, password string) (string, error)
 	AddToCart(userID, prodID string) error
 	RemoveFromCart(userID, prodID string) error
-	GetCartByUserID(id string) ([]models.Product, error)
+	GetCartByUserID(id string) ([]models.Product, float32, error)
 	CheckOut(id string, couponCode string) (float32, error)
 }

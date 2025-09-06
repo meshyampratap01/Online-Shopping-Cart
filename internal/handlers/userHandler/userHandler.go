@@ -15,10 +15,10 @@ import (
 )
 
 type UserHandler struct {
-	userService *userService.UserService
+	userService userService.UserServiceManager
 }
 
-func NewUserHandler(userService *userService.UserService) *UserHandler {
+func NewUserHandler(userService userService.UserServiceManager) *UserHandler {
 	return &UserHandler{
 		userService: userService,
 	}
@@ -126,14 +126,14 @@ func (uh *UserHandler) GetCartHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId := userClaims.UserID
-	cartItems, err := uh.userService.GetCartByUserID(userId)
+	cartItems,totalPrice, err := uh.userService.GetCartByUserID(userId)
 	if err != nil {
 		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	resp := webResponse.NewSuccessResponse(http.StatusOK, "Cart retrieved successfully", cartItems)
+	resp := webResponse.NewSuccessResponse(http.StatusOK, "Cart retrieved successfully", `{"items":`+fmt.Sprintf("%v", cartItems)+`,"total_price":`+fmt.Sprintf("%.2f", totalPrice)+`}`)
 	w.WriteHeader(resp.Code)
 	json.NewEncoder(w).Encode(resp)
 }

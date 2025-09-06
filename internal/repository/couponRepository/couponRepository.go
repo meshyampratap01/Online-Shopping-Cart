@@ -32,3 +32,8 @@ func (cr *CouponRepository) GetCouponByCode(code string) (*models.Coupon, error)
 	}
 	return coupon, nil
 }
+
+func (cr *CouponRepository) RemoveCoupon(code string) error {
+	_, err := cr.db.Exec("DELETE FROM coupons WHERE code = ?", code)
+	return err
+}

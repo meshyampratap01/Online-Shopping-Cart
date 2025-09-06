@@ -10,6 +10,16 @@ const (
 	Customer
 )
 
+func (ur UserRole) String() string {
+	switch ur {
+	case Admin:
+		return "Admin"
+	case Customer:
+		return "Customer"
+	}
+	return "Unknown"
+}
+
 type User struct {
 	ID       string
 	Name     string

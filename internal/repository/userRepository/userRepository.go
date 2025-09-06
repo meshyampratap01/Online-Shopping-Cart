@@ -2,6 +2,7 @@ package userRepository
 
 import (
 	"database/sql"
+	"encoding/json"
 
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/models"
 )
@@ -20,7 +21,7 @@ func (ur *UserRepository) SaveUser(user models.User) error {
 	return err
 }
 
-func (ur *UserRepository) GetUserByID(id string) (models.User,error){
+func (ur *UserRepository) GetUserByID(id string) (models.User, error) {
 	row := ur.Db.QueryRow("SELECT id, name, email, password, role FROM users WHERE id = ?", id)
 	var user models.User
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role)
@@ -30,7 +31,7 @@ func (ur *UserRepository) GetUserByID(id string) (models.User,error){
 	return user, nil
 }
 
-func (ur *UserRepository) GetUserByEmail(email string) (models.User,error){
+func (ur *UserRepository) GetUserByEmail(email string) (models.User, error) {
 	row := ur.Db.QueryRow("SELECT id, name, email, password, role FROM users WHERE email = ?", email)
 	var user models.User
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role)
@@ -40,21 +41,17 @@ func (ur *UserRepository) GetUserByEmail(email string) (models.User,error){
 	return user, nil
 }
 
-func (ur *UserRepository) GetUserCart(id string) (models.Cart,error){
-	rows,err:=ur.Db.Query("SELECT cart FROM users WHERE id = ?",id)
+func (ur *UserRepository) GetUserCart(id string) (models.Cart, error) {
+	rows := ur.Db.QueryRow("SELECT cart FROM users WHERE id = ?", id)
+	var cartJSON string
+	err := rows.Scan(&cartJSON)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var cart models.Cart
-	for rows.Next() {
-		var product models.Product
-		err := rows.Scan(&product.ID, &product.Name, &product.Price, &product.Stock)
-		if err != nil {
-			return nil, err
-		}
-		cart = append(cart, product)
+	err = json.Unmarshal([]byte(cartJSON), &cart)
+	if err != nil {
+		return nil, err
 	}
 	return cart, nil
 }

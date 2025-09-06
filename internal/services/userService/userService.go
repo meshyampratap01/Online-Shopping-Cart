@@ -110,12 +110,16 @@ func (us *UserService) RemoveFromCart(userID, prodID string) error {
 	return nil
 }
 
-func (us *UserService) GetCartByUserID(id string) ([]models.Product, error) {
+func (us *UserService) GetCartByUserID(id string) ([]models.Product, float32, error) {
 	cart, err := us.userRepo.GetUserCart(id)
 	if err != nil {
-		return nil, fmt.Errorf("can not fetch cart for user")
+		return nil, 0, fmt.Errorf("can not fetch cart for user")
 	}
-	return cart, nil
+	var totalPrice float32
+	for _, prod := range cart {
+		totalPrice += prod.Price
+	}
+	return cart, totalPrice, nil
 }
 
 func (us *UserService) CheckOut(id string, couponCode string) (float32, error) {

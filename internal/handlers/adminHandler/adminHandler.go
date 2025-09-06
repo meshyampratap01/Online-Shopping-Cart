@@ -47,7 +47,7 @@ func (ah *AdminHandler) AddProductHandler(w http.ResponseWriter, r *http.Request
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	if req.Price < 0 {
+	if req.Price <= 0 {
 		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "price can't be negative")
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
@@ -61,7 +61,7 @@ func (ah *AdminHandler) AddProductHandler(w http.ResponseWriter, r *http.Request
 	}
 	err = ah.AdminService.AddProduct(req.Name, req.Price, req.Stock)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, "can't add product")
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -111,7 +111,7 @@ func (ah *AdminHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Requ
 	prodID := r.PathValue("prodID")
 	err = ah.AdminService.UpdateProduct(prodID, req.Name, req.Price, req.Stock)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, "can't update product")
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -134,7 +134,7 @@ func (ah *AdminHandler) RemoveProductHandler(w http.ResponseWriter, r *http.Requ
 	prodID := r.PathValue("prodID")
 	err := ah.AdminService.RemoveProduct(prodID)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, "can't remove product")
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -172,7 +172,7 @@ func (ah *AdminHandler) AddCouponHandler(w http.ResponseWriter, r *http.Request)
 	}
 	err = ah.AdminService.AddCoupon(req.Code, req.Percentage)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, "can't add coupon")
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -195,7 +195,7 @@ func (ah *AdminHandler) RemoveCouponHandler(w http.ResponseWriter, r *http.Reque
 	couponCode := r.PathValue("code")
 	err := ah.AdminService.RemoveCoupon(couponCode)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, "can't remove coupon")
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
