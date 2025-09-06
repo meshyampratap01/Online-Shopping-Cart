@@ -1,6 +1,9 @@
 package models
 
+import "github.com/golang-jwt/jwt/v5"
+
 type UserRole int
+type Cart []Product
 
 const (
 	Admin UserRole = iota
@@ -13,5 +16,12 @@ type User struct {
 	Email    string
 	Password string
 	Role     UserRole
-	Cart     []Product
+	Cart     Cart
+}
+
+type UserJWT struct {
+	UserID string   `json:"user_id"`
+	Email  string   `json:"email"`
+	Role   UserRole `json:"role"`
+	jwt.RegisteredClaims
 }
