@@ -135,7 +135,7 @@ func (ch *CartHandler) CheckOutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId := userClaims.UserID
-	couponCode := r.URL.Query().Get("coupon")
+	couponCode := r.URL.Query().Get("code")
 	finalAmount, err := ch.cartService.Checkout(userId, couponCode)
 	if err != nil {
 		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())

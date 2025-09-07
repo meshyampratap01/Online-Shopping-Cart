@@ -53,7 +53,7 @@ func (as *AdminService) UpdateProduct(id, name string, price float32, stock int)
 	if price > 0 {
 		product.Price = price
 	}
-	if stock >= 0 {
+	if stock > 0 {
 		product.Stock = stock
 	}
 	return as.productRepo.UpdateProduct(product)

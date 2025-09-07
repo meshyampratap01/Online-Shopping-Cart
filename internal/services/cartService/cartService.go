@@ -72,7 +72,12 @@ func (cs *CartService) Checkout(userID string, couponCode string) (float32, erro
 			return 0, fmt.Errorf("failed to update stock for product %s", prod.Name)
 		}
 	}
+	err=cs.cartRepo.EmptyCart(userID)
+	if err!=nil{
+		return 0,fmt.Errorf("can't update cart: %v",err)
+	}
 	if couponCode != "" {
+		fmt.Println("coupon applied")
 		coupon, err := cs.couponRepo.GetCouponByCode(couponCode)
 		if err != nil {
 			return 0, err

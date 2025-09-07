@@ -1,7 +1,7 @@
 package dto
 
 type ProductDTO struct {
-	Name  string  `json:"name"`
-	Price float32 `json:"price"`
-	Stock int     `json:"stock"`
+	Name  string  `json:"name,omitempty"`
+	Price float32 `json:"price,omitempty"`
+	Stock int     `json:"stock,omitempty"`
 }

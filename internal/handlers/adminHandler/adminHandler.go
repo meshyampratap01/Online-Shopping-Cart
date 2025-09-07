@@ -90,25 +90,25 @@ func (ah *AdminHandler) UpdateProductHandler(w http.ResponseWriter, r *http.Requ
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	err = validators.ValidateName(req.Name)
-	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, err.Error())
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	if req.Price <= 0 {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "price can't be negative")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	if req.Stock <= 0 {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "stock can't be negative")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
+	// err = validators.ValidateName(req.Name)
+	// if err != nil {
+	// 	resp := webResponse.NewErrorResponse(http.StatusBadRequest, err.Error())
+	// 	w.WriteHeader(resp.Code)
+	// 	json.NewEncoder(w).Encode(resp)
+	// 	return
+	// }
+	// if req.Price <= 0 {
+	// 	resp := webResponse.NewErrorResponse(http.StatusBadRequest, "price can't be negative")
+	// 	w.WriteHeader(resp.Code)
+	// 	json.NewEncoder(w).Encode(resp)
+	// 	return
+	// }
+	// if req.Stock <= 0 {
+	// 	resp := webResponse.NewErrorResponse(http.StatusBadRequest, "stock can't be negative")
+	// 	w.WriteHeader(resp.Code)
+	// 	json.NewEncoder(w).Encode(resp)
+	// 	return
+	// }
 	prodID := r.PathValue("prodID")
 	err = ah.AdminService.UpdateProduct(prodID, req.Name, req.Price, req.Stock)
 	if err != nil {
