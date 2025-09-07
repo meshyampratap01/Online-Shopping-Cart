@@ -50,8 +50,8 @@ func (pr *ProductRepository) GetAllProducts() ([]models.Product, error) {
 	return products, nil
 }
 
-func (pr *ProductRepository) GetProductByName(name string) ([]models.Product, error) {
-	rows, err := pr.Db.Query("SELECT id,name,price,stock FROM products WHERE name LIKE ?", "%"+name+"%")
+func (pr *ProductRepository) GetProductByName(name *string) ([]models.Product, error) {
+	rows, err := pr.Db.Query("SELECT id,name,price,stock FROM products WHERE name LIKE ?", "%"+*name+"%")
 	if err != nil {
 		return nil, err
 	}

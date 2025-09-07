@@ -32,7 +32,7 @@ func (ps *ProductService) GetProductByID(id string) (models.Product, error) {
 	return product, nil
 }
 
-func (ps *ProductService) GetProductByName(name string) ([]models.Product, error) {
+func (ps *ProductService) GetProductByName(name *string) ([]models.Product, error) {
 	products, err := ps.productRepo.GetProductByName(name)
 	if err != nil {
 		return nil, fmt.Errorf("no product with specified name found")

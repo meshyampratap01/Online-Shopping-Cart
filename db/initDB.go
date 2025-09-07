@@ -7,7 +7,6 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
-var db *sql.DB
 
 func InitDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./shopping_cart.db")
@@ -21,6 +20,7 @@ func InitDB() *sql.DB {
 	}
 
 	createTables(db)
+	seed(db)
 
 	return db
 }
@@ -59,10 +59,8 @@ func createTables(db *sql.DB) {
 	);
 
 	CREATE TABLE IF NOT EXISTS coupons (
-	    id TEXT PRIMARY KEY,
 	    code TEXT NOT NULL UNIQUE,
-	    discount REAL NOT NULL CHECK (discount > 0),
-	    expiration_date TEXT NOT NULL
+	    discount REAL NOT NULL CHECK (discount > 0)
 	);
 	`
 
@@ -70,4 +68,37 @@ func createTables(db *sql.DB) {
 	if err != nil {
 		log.Fatal("Error creating tables:", err)
 	}	
+}
+
+func seed(db *sql.DB) {
+	_, err := db.Exec(`
+		INSERT OR IGNORE INTO users (id, name, email, password, role)
+		VALUES ('u_Admin', 'Admin User', 'admin@shyam.com', 'admin@123', 1)
+	`)
+	if err != nil {
+		log.Fatal("Error seeding admin:", err)
+	}
+
+	products := []struct {
+		id    string
+		name  string
+		price float64
+		stock int
+	}{
+		{"p1", "Laptop", 75000.00, 10},
+		{"p2", "Smartphone", 35000.00, 25},
+		{"p3", "Headphones", 2500.00, 50},
+		{"p4", "Keyboard", 1200.00, 30},
+		{"p5", "Monitor", 15000.00, 15},
+	}
+
+	for _, p := range products {
+		_, err := db.Exec(`
+			INSERT OR IGNORE INTO products (id, name, price, stock)
+			VALUES (?, ?, ?, ?)
+		`, p.id, p.name, p.price, p.stock)
+		if err != nil {
+			log.Fatal("Error seeding products:", err)
+		}
+	}
 }

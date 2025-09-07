@@ -5,7 +5,7 @@ import "github.com/golang-jwt/jwt/v5"
 type UserRole int
 
 const (
-	Admin UserRole = iota
+	Admin UserRole = iota + 1
 	Customer
 )
 

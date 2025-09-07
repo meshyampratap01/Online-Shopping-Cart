@@ -44,6 +44,12 @@ func (ch *CartHandler) GetCartHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
+	if len(cartItems)==0{
+		resp := webResponse.NewSuccessResponse(http.StatusOK, "Cart items fetched successfully", "cart is empty")
+		w.WriteHeader(resp.Code)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
 	resp := webResponse.NewSuccessResponse(http.StatusOK, "Cart items fetched successfully", cartItems)
 	w.WriteHeader(resp.Code)
 	json.NewEncoder(w).Encode(resp)
@@ -70,7 +76,7 @@ func (ch *CartHandler) AddToCartHandler(w http.ResponseWriter, r *http.Request) 
 	prodID := r.PathValue("prodID")
 	err := ch.cartService.AddToCart(userId, prodID)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, fmt.Sprintf("problem while adding product to cart: %v",err.Error()))
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return

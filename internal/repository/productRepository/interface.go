@@ -7,6 +7,6 @@ type ProductManager interface {
 	RemoveProduct(id string) error
 	UpdateProduct(models.Product) error
 	GetAllProducts() ([]models.Product,error)
-	GetProductByName(name string)	([]models.Product,error)
+	GetProductByName(name *string)	([]models.Product,error)
 	GetProductByID(id string)	(models.Product,error)
 }

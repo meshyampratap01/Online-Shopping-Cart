@@ -64,12 +64,12 @@ func ValidateJWT(tokenStr string) (models.UserJWT, error) {
 	return claims, nil
 }
 
-func ValidateCoupon(code string, percentage float32) error {
+func ValidateCoupon(code string, discount float32) error {
 	if len(code) < 3 {
 		return fmt.Errorf("coupon code must be at least 3 characters long")
 	}
-	if percentage <= 0 || percentage > 100 {
-		return fmt.Errorf("coupon percentage must be between 0 and 100")
+	if discount <= 0 || discount > 100 {
+		return fmt.Errorf("coupon discount must be between 0 and 100")
 	}
 	return nil
 }

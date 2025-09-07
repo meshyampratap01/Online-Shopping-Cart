@@ -15,15 +15,15 @@ func NewCouponRepository(db *sql.DB) *CouponRepository {
 }
 
 func (cr *CouponRepository) SaveCoupon(coupon *models.Coupon) error {
-	_, err := cr.db.Exec("INSERT INTO coupons (code, percentage) VALUES (?, ?)",
-		coupon.Code, coupon.Percentage)
+	_, err := cr.db.Exec("INSERT INTO coupons (code, discount) VALUES (?, ?)",
+		coupon.Code, coupon.Discount)
 	return err
 }
 
 func (cr *CouponRepository) GetCouponByCode(code string) (*models.Coupon, error) {
-	row := cr.db.QueryRow("SELECT code, percentage FROM coupons WHERE code = ?", code)
+	row := cr.db.QueryRow("SELECT code, discount FROM coupons WHERE code = ?", code)
 	coupon := &models.Coupon{}
-	err := row.Scan(&coupon.Code, &coupon.Percentage)
+	err := row.Scan(&coupon.Code, &coupon.Discount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

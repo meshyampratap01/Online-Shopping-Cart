@@ -10,7 +10,7 @@ import (
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/handlers/cartHandler"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/handlers/productHandler"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/handlers/userHandler"
-	cartrepository "github.com/meshyampratap01/OnlineShoppingCart/internal/repository/cartRepository"
+	cartRepository "github.com/meshyampratap01/OnlineShoppingCart/internal/repository/cartRepository"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/repository/couponRepository"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/repository/productRepository"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/repository/userRepository"
@@ -34,9 +34,9 @@ func NewApp(db *sql.DB) *App {
 	userRepo := userRepository.NewUserRepository(db)
 	prodRepo := productRepository.NewProductRepository(db)
 	couponRepo := couponRepository.NewCouponRepository(db)
-	cartRepo := cartrepository.NewCartRepository(db)
+	cartRepo := cartRepository.NewCartRepository(db)
 
-	userServ := userService.NewUserService(userRepo, prodRepo, couponRepo)
+	userServ := userService.NewUserService(userRepo, prodRepo, couponRepo, cartRepo)
 	prodServ := productService.NewProductService(prodRepo)
 	adminServ := adminservice.NewAdminService(prodRepo, couponRepo)
 	cartServ := cartservice.NewCartService(cartRepo, prodRepo, couponRepo)

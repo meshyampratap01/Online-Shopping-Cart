@@ -6,7 +6,7 @@ import (
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/middleware"
 )
 
-var baseURL = "/api/v1/"
+var baseURL = "/api/v1"
 
 func withAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -19,15 +19,15 @@ func (app *App) RegisterRoutes() {
 	app.apimux.HandleFunc("POST "+baseURL+"/register", app.UserHandler.RegisterUser)
 	app.apimux.HandleFunc("POST "+baseURL+"/login", app.UserHandler.LoginHandler)
 
-	app.apimux.HandleFunc("GET "+baseURL+"/products", app.ProductHandler.GetAllProducts)
+	app.apimux.HandleFunc("GET "+baseURL+"/products", app.ProductHandler.GetAllProducts)//can search by name with "name" query param
 	app.apimux.HandleFunc("GET "+baseURL+"/products/{prodID}", app.ProductHandler.GetProductByID)
-	app.apimux.HandleFunc("GET "+baseURL+"/products/", app.ProductHandler.GetProductByName) // Search by name query param
 
 	app.apimux.HandleFunc("POST "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.AddToCartHandler))
 	app.apimux.HandleFunc("GET "+baseURL+"/cart", withAuth(app.CartHandler.GetCartHandler))
 	app.apimux.HandleFunc("DELETE "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.RemoveFromCartHandler))
 	app.apimux.HandleFunc("POST "+baseURL+"/checkout", withAuth(app.CartHandler.CheckOutHandler))
 
+	app.apimux.HandleFunc("GET "+baseURL+"/admin/products", withAuth(app.ProductHandler.GetAllProducts))
 	app.apimux.HandleFunc("POST "+baseURL+"/admin/products", withAuth(app.AdminHandler.AddProductHandler))
 	app.apimux.HandleFunc("PUT "+baseURL+"/admin/products/{prodID}", withAuth(app.AdminHandler.UpdateProductHandler))
 	app.apimux.HandleFunc("DELETE "+baseURL+"/admin/products/{prodID}", withAuth(app.AdminHandler.RemoveProductHandler))

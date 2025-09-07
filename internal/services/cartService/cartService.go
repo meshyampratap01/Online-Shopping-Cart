@@ -4,28 +4,36 @@ import (
 	"fmt"
 
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/dto"
-	cartrepository "github.com/meshyampratap01/OnlineShoppingCart/internal/repository/cartRepository"
+	cartRepository "github.com/meshyampratap01/OnlineShoppingCart/internal/repository/cartRepository"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/repository/couponRepository"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/repository/productRepository"
 )
 
 type CartService struct {
-	cartRepo cartrepository.CartManager
-	prodRepo productRepository.ProductManager
+	cartRepo   cartRepository.CartManager
+	prodRepo   productRepository.ProductManager
 	couponRepo couponRepository.CouponManager
 }
 
-func NewCartService(cartRepo cartrepository.CartManager, prodRepo productRepository.ProductManager, couponRepo couponRepository.CouponManager) *CartService {
+func NewCartService(cartRepo cartRepository.CartManager, prodRepo productRepository.ProductManager, couponRepo couponRepository.CouponManager) *CartService {
 	return &CartService{cartRepo: cartRepo, prodRepo: prodRepo, couponRepo: couponRepo}
 }
 
-func (cs *CartService) GetCartItems(cartID string) ([]dto.CartItemsDTO, error) {
-	return cs.cartRepo.GetCartItems(cartID)
+func (cs *CartService) GetCartItems(userID string) ([]dto.CartItemsDTO, error) {
+	cartID, err := cs.cartRepo.GetCartIDByUserID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("no cart associated with user,%v", err)
+	}
+	cartItems, err := cs.cartRepo.GetCartItems(cartID)
+	if err != nil {
+		return nil, fmt.Errorf("can't fetch cart items: %v", err)
+	}
+	return cartItems, nil
 }
 
 func (cs *CartService) AddToCart(userID, prodID string) error {
-	prod,err:= cs.prodRepo.GetProductByID(prodID)
-	if err!=nil{
+	prod, err := cs.prodRepo.GetProductByID(prodID)
+	if err != nil {
 		return err
 	}
 	if prod.Stock <= 0 {
@@ -69,7 +77,7 @@ func (cs *CartService) Checkout(userID string, couponCode string) (float32, erro
 		if err != nil {
 			return 0, err
 		}
-		total = total - (total * coupon.Percentage / 100)
+		total = total - (total * coupon.Discount / 100)
 	}
 	return total, nil
 }

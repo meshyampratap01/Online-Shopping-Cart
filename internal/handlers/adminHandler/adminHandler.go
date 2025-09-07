@@ -2,6 +2,7 @@ package adminhandler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/config"
@@ -35,20 +36,20 @@ func (ah *AdminHandler) AddProductHandler(w http.ResponseWriter, r *http.Request
 	var req dto.ProductDTO
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "invalid request body")
+		resp := webResponse.NewErrorResponse(http.StatusBadRequest, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	err = validators.ValidateName(req.Name)
 	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, err.Error())
+		resp := webResponse.NewErrorResponse(http.StatusBadRequest, fmt.Sprintf("name must be valid: %v",err))
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	if req.Price <= 0 {
-		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "price can't be negative")
+		resp := webResponse.NewErrorResponse(http.StatusBadRequest, "price can't be negative or zero")
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -163,14 +164,14 @@ func (ah *AdminHandler) AddCouponHandler(w http.ResponseWriter, r *http.Request)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	err = validators.ValidateCoupon(req.Code, req.Percentage)
+	err = validators.ValidateCoupon(req.Code, req.Discount)
 	if err != nil {
 		resp := webResponse.NewErrorResponse(http.StatusBadRequest, err.Error())
 		w.WriteHeader(resp.Code)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	err = ah.AdminService.AddCoupon(req.Code, req.Percentage)
+	err = ah.AdminService.AddCoupon(req.Code, req.Discount)
 	if err != nil {
 		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		w.WriteHeader(resp.Code)
