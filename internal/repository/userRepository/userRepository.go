@@ -2,7 +2,6 @@ package userRepository
 
 import (
 	"database/sql"
-	"encoding/json"
 
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/models"
 )
@@ -39,31 +38,4 @@ func (ur *UserRepository) GetUserByEmail(email string) (models.User, error) {
 		return models.User{}, err
 	}
 	return user, nil
-}
-
-func (ur *UserRepository) GetUserCart(id string) (models.Cart, error) {
-	rows := ur.Db.QueryRow("SELECT cart FROM users WHERE id = ?", id)
-	var cartJSON string
-	err := rows.Scan(&cartJSON)
-	if err != nil {
-		return nil, err
-	}
-	var cart models.Cart
-	err = json.Unmarshal([]byte(cartJSON), &cart)
-	if err != nil {
-		return nil, err
-	}
-	return cart, nil
-}
-
-func (ur *UserRepository) AddToUserCart(userID string, product models.Product) error {
-	_, err := ur.Db.Exec("UPDATE users SET cart = JSON_ARRAY_APPEND(cart, '$', JSON_OBJECT('id', ?, 'name', ?, 'price', ?, 'stock', ?)) WHERE id = ?",
-		product.ID, product.Name, product.Price, product.Stock, userID)
-	return err
-}
-
-func (ur *UserRepository) RemoveFromUserCart(userID string, product models.Product) error {
-	_, err := ur.Db.Exec("UPDATE users SET cart = JSON_REMOVE(cart, JSON_UNQUOTE(JSON_SEARCH(cart, 'one', ?))) WHERE id = ?",
-		product.ID, userID)
-	return err
 }

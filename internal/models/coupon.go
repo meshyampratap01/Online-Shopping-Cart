@@ -2,6 +2,6 @@ package models
 
 
 type Coupon struct {
-	Code       string
-	Percentage float32
+	Code       string  `json:"code"`
+	Percentage float32 `json:"percentage"`
 }

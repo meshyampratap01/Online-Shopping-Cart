@@ -45,13 +45,11 @@ func (us *UserService) RegisterUser(name, email, password string, role models.Us
 
 func (us *UserService) CreateUser(name, email, password string, role models.UserRole) (models.User, error) {
 	id := utils.NewUUID()
-	cart := []models.Product{}
 	newUser := models.User{
 		ID:       id,
 		Name:     name,
 		Email:    email,
 		Password: password,
-		Cart:     cart,
 	}
 
 	return newUser, nil
@@ -77,79 +75,4 @@ func (us *UserService) Login(email, password string) (string, error) {
 	}
 
 	return token, nil
-}
-
-func (us *UserService) AddToCart(userID, prodID string) error {
-	prod, err := us.prodRepo.GetProductByID(prodID)
-	if err != nil {
-		return fmt.Errorf("no product with specified id found")
-	}
-	err = us.userRepo.AddToUserCart(userID, prod)
-	if err != nil {
-		return fmt.Errorf("can't add product to cart")
-	}
-	return nil
-}
-
-func (us *UserService) RemoveFromCart(userID, prodID string) error {
-	prod, err := us.prodRepo.GetProductByID(prodID)
-	if err != nil {
-		return fmt.Errorf("no product with specified id found")
-	}
-	cart, err := us.userRepo.GetUserCart(userID)
-	if err != nil {
-		return fmt.Errorf("can not fetch cart for user")
-	}
-	if len(cart) == 0 {
-		return fmt.Errorf("cart is empty")
-	}
-	err = us.userRepo.RemoveFromUserCart(userID, prod)
-	if err != nil {
-		return fmt.Errorf("can't remove product from cart")
-	}
-	return nil
-}
-
-func (us *UserService) GetCartByUserID(id string) ([]models.Product, float32, error) {
-	cart, err := us.userRepo.GetUserCart(id)
-	if err != nil {
-		return nil, 0, fmt.Errorf("can not fetch cart for user")
-	}
-	var totalPrice float32
-	for _, prod := range cart {
-		totalPrice += prod.Price
-	}
-	return cart, totalPrice, nil
-}
-
-func (us *UserService) CheckOut(id string, couponCode string) (float32, error) {
-	cart, err := us.userRepo.GetUserCart(id)
-	if err != nil {
-		return 0, fmt.Errorf("can not fetch cart for user")
-	}
-	if len(cart) == 0 {
-		return 0, fmt.Errorf("cart is empty")
-	}
-	var total float32
-	for _, prod := range cart {
-		if prod.Stock <= 0 {
-			return 0, fmt.Errorf("product %s is out of stock", prod.Name)
-		} else {
-			prod.Stock -= 1
-			err := us.prodRepo.UpdateProduct(prod)
-			if err != nil {
-				return 0, fmt.Errorf("can not update product %s", prod.Name)
-			}
-		}
-		total += prod.Price
-	}
-	if couponCode != "" {
-		coupon, err := us.couponRepo.GetCouponByCode(couponCode)
-		if err != nil || coupon == nil {
-			return 0, fmt.Errorf("invalid coupon code")
-		}
-		total *= (1 - coupon.Percentage/100)
-	}
-
-	return total, nil
 }

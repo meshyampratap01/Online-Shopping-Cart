@@ -2,11 +2,9 @@ package userHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/meshyampratap01/OnlineShoppingCart/internal/config"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/dto"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/models"
 	"github.com/meshyampratap01/OnlineShoppingCart/internal/services/userService"
@@ -79,7 +77,6 @@ func (uh *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reqp)
 }
 
-
 // api/v1/login [POST]
 func (uh *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequestDTO
@@ -103,133 +100,6 @@ func (uh *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := webResponse.NewSuccessResponse(http.StatusOK, "Login successful", `{"token":"`+token+`"}`)
-	w.WriteHeader(resp.Code)
-	json.NewEncoder(w).Encode(resp)
-}
-
-
-// api/v1/cart [GET]
-func (uh *UserHandler) GetCartHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	userClaims, ok := ctx.Value(config.User).(models.UserJWT)
-	if !ok {
-		resp := webResponse.NewErrorResponse(http.StatusUnauthorized, "unauthorized")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userRole := userClaims.Role
-	if userRole != models.Customer {
-		resp := webResponse.NewErrorResponse(http.StatusForbidden, "forbidden")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userId := userClaims.UserID
-	cartItems,totalPrice, err := uh.userService.GetCartByUserID(userId)
-	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	resp := webResponse.NewSuccessResponse(http.StatusOK, "Cart retrieved successfully", `{"items":`+fmt.Sprintf("%v", cartItems)+`,"total_price":`+fmt.Sprintf("%.2f", totalPrice)+`}`)
-	w.WriteHeader(resp.Code)
-	json.NewEncoder(w).Encode(resp)
-}
-
-
-// api/v1/cart/{prodID} [POST]
-func (uh *UserHandler) AddToCartHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	userClaims, ok := ctx.Value(config.User).(models.UserJWT)
-	if !ok {
-		resp := webResponse.NewErrorResponse(http.StatusUnauthorized, "unauthorized")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userRole := userClaims.Role
-	if userRole != models.Customer {
-		resp := webResponse.NewErrorResponse(http.StatusForbidden, "forbidden")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userId := userClaims.UserID
-	prodID := r.PathValue("prodID")
-	err := uh.userService.AddToCart(userId, prodID)
-	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	reqp := webResponse.NewSuccessResponse(http.StatusOK, "Product added to cart successfully", nil)
-	json.NewEncoder(w).Encode(reqp)
-}
-
-
-// api/v1/cart/{prodID} [DELETE]
-func (uh *UserHandler) RemoveFromCartHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	userClaims, ok := ctx.Value(config.User).(models.UserJWT)
-	if !ok {
-		resp := webResponse.NewErrorResponse(http.StatusUnauthorized, "unauthorized")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userRole := userClaims.Role
-	if userRole != models.Customer {
-		resp := webResponse.NewErrorResponse(http.StatusForbidden, "forbidden")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userId := userClaims.UserID
-	prodID := r.PathValue("prodID")
-	err := uh.userService.RemoveFromCart(userId, prodID)
-	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	reqp := webResponse.NewSuccessResponse(http.StatusOK, "Product removed from cart successfully", nil)
-	json.NewEncoder(w).Encode(reqp)
-}
-
-
-// api/v1/checkout [POST]
-func (uh *UserHandler) CheckOutHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	userClaims, ok := ctx.Value(config.User).(models.UserJWT)
-	if !ok {
-		resp := webResponse.NewErrorResponse(http.StatusUnauthorized, "unauthorized")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userRole := userClaims.Role
-	if userRole != models.Customer {
-		resp := webResponse.NewErrorResponse(http.StatusForbidden, "forbidden")
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	userId := userClaims.UserID
-	couponCode := r.URL.Query().Get("coupon")
-	total, err := uh.userService.CheckOut(userId, couponCode)
-	if err != nil {
-		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
-		w.WriteHeader(resp.Code)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-	resp := webResponse.NewSuccessResponse(http.StatusOK, "Checkout successful", `{"total":`+fmt.Sprintf("%.2f", total)+`}`)
 	w.WriteHeader(resp.Code)
 	json.NewEncoder(w).Encode(resp)
 }

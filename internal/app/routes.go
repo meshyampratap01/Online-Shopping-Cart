@@ -23,10 +23,10 @@ func (app *App) RegisterRoutes() {
 	app.apimux.HandleFunc("GET "+baseURL+"/products/{prodID}", app.ProductHandler.GetProductByID)
 	app.apimux.HandleFunc("GET "+baseURL+"/products/", app.ProductHandler.GetProductByName) // Search by name query param
 
-	app.apimux.HandleFunc("POST "+baseURL+"/cart/{prodID}", withAuth(app.UserHandler.AddToCartHandler))
-	app.apimux.HandleFunc("GET "+baseURL+"/cart", withAuth(app.UserHandler.GetCartHandler))
-	app.apimux.HandleFunc("DELETE "+baseURL+"/cart/{prodID}", withAuth(app.UserHandler.RemoveFromCartHandler))
-	app.apimux.HandleFunc("POST "+baseURL+"/checkout", withAuth(app.UserHandler.CheckOutHandler))
+	app.apimux.HandleFunc("POST "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.AddToCartHandler))
+	app.apimux.HandleFunc("GET "+baseURL+"/cart", withAuth(app.CartHandler.GetCartHandler))
+	app.apimux.HandleFunc("DELETE "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.RemoveFromCartHandler))
+	app.apimux.HandleFunc("POST "+baseURL+"/checkout", withAuth(app.CartHandler.CheckOutHandler))
 
 	app.apimux.HandleFunc("POST "+baseURL+"/admin/products", withAuth(app.AdminHandler.AddProductHandler))
 	app.apimux.HandleFunc("PUT "+baseURL+"/admin/products/{prodID}", withAuth(app.AdminHandler.UpdateProductHandler))
