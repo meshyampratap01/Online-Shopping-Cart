@@ -3,7 +3,7 @@ package webResponse
 type WebResponse struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	Data    any `json:"data,omitempty"`
 }
 
 func NewErrorResponse(code int, message string) *WebResponse {
@@ -13,7 +13,7 @@ func NewErrorResponse(code int, message string) *WebResponse {
 	}
 }
 
-func NewSuccessResponse(code int, message string, data interface{}) *WebResponse {
+func NewSuccessResponse(code int, message string, data any) *WebResponse {
 	return &WebResponse{
 		Code:    code,
 		Message: message,

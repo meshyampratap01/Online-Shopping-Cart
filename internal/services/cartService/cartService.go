@@ -39,11 +39,38 @@ func (cs *CartService) AddToCart(userID, prodID string) error {
 	if prod.Stock <= 0 {
 		return fmt.Errorf("product %s is out of stock", prod.Name)
 	}
+	cartID, err := cs.cartRepo.GetCartIDByUserID(userID)
+	if err != nil {
+		return fmt.Errorf("no cart associated with the user: %v", err)
+	}
+	quantity, err := cs.cartRepo.GetCartItemQuantity(cartID, prodID)
+	if err!=nil{
+		return fmt.Errorf("product can not be added in cart: %v",err)
+	}
+	if prod.Stock < quantity+1 {
+		return fmt.Errorf("not enough stock")
+	}
 	return cs.cartRepo.AddToCart(userID, prod)
 }
 
 func (cs *CartService) RemoveFromCart(userID, prodID string) error {
-	return cs.cartRepo.RemoveFromCart(userID, prodID)
+	cartID, err := cs.cartRepo.GetCartIDByUserID(userID)
+	if err != nil {
+		return fmt.Errorf("no cart associated with the user: %v", err)
+	}
+
+	cartItems, err := cs.cartRepo.GetCartItems(cartID)
+	if err != nil || cartItems == nil {
+		return fmt.Errorf("product is not in cart")
+	}
+
+	for _, cartItem := range cartItems {
+		if prodID == cartItem.ProductID {
+			err := cs.cartRepo.RemoveFromCart(cartID, prodID)
+			return err
+		}
+	}
+	return fmt.Errorf("product is not in cart")
 }
 
 func (cs *CartService) Checkout(userID string, couponCode string) (float32, error) {
@@ -72,15 +99,14 @@ func (cs *CartService) Checkout(userID string, couponCode string) (float32, erro
 			return 0, fmt.Errorf("failed to update stock for product %s", prod.Name)
 		}
 	}
-	err=cs.cartRepo.EmptyCart(userID)
-	if err!=nil{
-		return 0,fmt.Errorf("can't update cart: %v",err)
+	err = cs.cartRepo.EmptyCart(userID)
+	if err != nil {
+		return 0, fmt.Errorf("can't update cart: %v", err)
 	}
 	if couponCode != "" {
-		fmt.Println("coupon applied")
 		coupon, err := cs.couponRepo.GetCouponByCode(couponCode)
-		if err != nil {
-			return 0, err
+		if err != nil || coupon == nil {
+			return 0, fmt.Errorf("no coupon available with specified code")
 		}
 		total = total - (total * coupon.Discount / 100)
 	}

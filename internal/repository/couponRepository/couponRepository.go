@@ -25,9 +25,6 @@ func (cr *CouponRepository) GetCouponByCode(code string) (*models.Coupon, error)
 	coupon := &models.Coupon{}
 	err := row.Scan(&coupon.Code, &coupon.Discount)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
 	return coupon, nil

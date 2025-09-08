@@ -38,13 +38,22 @@ func (cr *CartRepository) AddToCart(userID string, product models.Product) error
 	return err
 }
 
-func (cr *CartRepository) RemoveFromCart(userID string, prodID string) error {
-	cartID, err := cr.GetCartIDByUserID(userID)
+func (cr *CartRepository) RemoveFromCart(cartID string, prodID string) error {
+	row := cr.db.QueryRow(`SELECT quantity FROM cart_items WHERE cart_id = ? AND product_id = ?`, cartID, prodID)
+	var quantity int
+	err := row.Scan(&quantity)
 	if err != nil {
 		return err
 	}
-	_, err = cr.db.Exec("DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?", cartID, prodID)
-	return err
+	if quantity > 1 {
+		_, err := cr.db.Exec(`UPDATE cart_items SET quantity = quantity - 1 WHERE cart_id = ? AND product_id = ?`, cartID, prodID)
+		return err
+	}
+	if quantity == 1 {
+		_, err := cr.db.Exec(`DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?`, cartID, prodID)
+		return err
+	}
+	return nil
 }
 
 func (cr *CartRepository) GetCartIDByUserID(userID string) (string, error) {
@@ -64,6 +73,13 @@ func (cr *CartRepository) EmptyCart(userID string) error {
 	}
 	_, err = cr.db.Exec("DELETE FROM cart_items WHERE cart_id = ?", cartID)
 	return err
+}
+
+func (cr *CartRepository) GetCartItemQuantity(cartID, prodID string) (int, error) {
+	row := cr.db.QueryRow(`SELECT quantity FROM cart_items WHERE cart_id = ? AND product_id = ?`, cartID, prodID)
+	var quantity int
+	_ = row.Scan(&quantity)
+	return quantity, nil
 }
 
 func (cr *CartRepository) GetCartItems(cartID string) ([]dto.CartItemsDTO, error) {

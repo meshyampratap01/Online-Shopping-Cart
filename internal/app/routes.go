@@ -25,7 +25,7 @@ func (app *App) RegisterRoutes() {
 	app.apimux.HandleFunc("POST "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.AddToCartHandler))
 	app.apimux.HandleFunc("GET "+baseURL+"/cart", withAuth(app.CartHandler.GetCartHandler))
 	app.apimux.HandleFunc("DELETE "+baseURL+"/cart/{prodID}", withAuth(app.CartHandler.RemoveFromCartHandler))
-	app.apimux.HandleFunc("POST "+baseURL+"/checkout", withAuth(app.CartHandler.CheckOutHandler))
+	app.apimux.HandleFunc("POST "+baseURL+"/checkout", withAuth(app.CartHandler.CheckOutHandler))// can use a code for discount "code" query param
 
 	app.apimux.HandleFunc("GET "+baseURL+"/admin/products", withAuth(app.ProductHandler.GetAllProducts))
 	app.apimux.HandleFunc("POST "+baseURL+"/admin/products", withAuth(app.AdminHandler.AddProductHandler))
