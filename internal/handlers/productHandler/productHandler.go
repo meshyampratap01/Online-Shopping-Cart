@@ -63,20 +63,3 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(resp.Code)
 	json.NewEncoder(w).Encode(resp)
 }
-
-// // api/v1/products?name={name} [GET]
-// func (ph *ProductHandler) GetProductByName(w http.ResponseWriter, r *http.Request) {
-// 	name := r.URL.Query().Get("name")
-// 	name = strings.TrimSpace(name)
-
-// 	products, err := ph.productService.GetProductByName(&name)
-// 	if err != nil {
-// 		resp := webResponse.NewErrorResponse(http.StatusInternalServerError, err.Error())
-// 		w.WriteHeader(resp.Code)
-// 		json.NewEncoder(w).Encode(resp)
-// 		return
-// 	}
-// 	resp := webResponse.NewSuccessResponse(http.StatusOK, "Products retrieved successfully", products)
-// 	w.WriteHeader(resp.Code)
-// 	json.NewEncoder(w).Encode(resp)
-// }
