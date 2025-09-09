@@ -1,3 +1,4 @@
+//go:generate mockgen -source=interface.go -destination=../../mocks/mock_productRepository.go -package=mocks
 package productRepository
 
 import "github.com/meshyampratap01/OnlineShoppingCart/internal/models"

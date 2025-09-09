@@ -68,12 +68,12 @@ func (as *AdminService) RemoveProduct(id string) error {
 }
 
 func (as *AdminService) AddCoupon(code string, discount float32) error {
+	if code == "" || discount <= 0 || discount > 100 {
+		return fmt.Errorf("invalid coupon details")
+	}
 	coupon, err := as.couponRepo.GetCouponByCode(code)
 	if err == nil && coupon != nil {
 		return fmt.Errorf("coupon code already exists")
-	}
-	if code == "" || discount <= 0 || discount > 100 {
-		return fmt.Errorf("invalid coupon details")
 	}
 	newCoupon := models.Coupon{
 		Code:      code,
