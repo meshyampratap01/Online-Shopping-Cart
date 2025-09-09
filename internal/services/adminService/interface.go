@@ -1,5 +1,7 @@
 package adminservice
 
+//go:generate mockgen -source=interface.go -destination=../../mocks/mock_adminServcie.go -package mocks
+
 
 type AdminServiceManager interface {
 	AddProduct(name string, price float32, stock int) error
