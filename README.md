@@ -1,7 +1,7 @@
-# 🛒Online Shopping Cart
+# 🛒 Online Shopping Cart
 
-An **Online Shopping Cart** application built with **Go**
-The project demonstrates clean code principles, separation of concerns, and design patterns in GO, using **SQLite3** as the database driver.
+An **Online Shopping Cart** application built with **Go**.  
+This project demonstrates clean code principles, separation of concerns, and the use of design patterns in Go. It uses **SQLite3** as the database driver.
 
 ## How to run:
 1. **Clone the repository**

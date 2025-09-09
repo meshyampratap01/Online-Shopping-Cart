@@ -12,3 +12,5 @@ require (
 )
 
 require go.uber.org/mock v0.6.0
+
+require github.com/DATA-DOG/go-sqlmock v1.5.2
